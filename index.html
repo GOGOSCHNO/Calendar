@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar Frontend</title>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.0.0/main.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    #calendar {
+      max-width: 900px;
+      margin: 50px auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="calendar"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.0.0/main.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendarEl = document.getElementById('calendar');
+
+        // Initialisation du calendrier
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            editable: true, // Permet le glisser-déposer
+            eventClick: function(info) {
+                // Gestion des clics sur les événements
+                alert(`Rendez-vous : ${info.event.title}\nDate : ${info.event.start.toISOString().slice(0, 10)}`);
+            },
+            eventDrop: async function(info) {
+                // Mise à jour de l'événement après un glisser-déposer
+                const updatedEvent = {
+                    id: info.event.id,
+                    date: info.event.start.toISOString().slice(0, 10),
+                    time: info.event.start.toISOString().slice(11, 16)
+                };
+                try {
+                    await axios.put(`http://localhost:8000/appointments/${updatedEvent.id}`, updatedEvent);
+                    alert('Rendez-vous mis à jour avec succès.');
+                } catch (error) {
+                    console.error('Erreur lors de la mise à jour', error);
+                    alert('Erreur lors de la mise à jour du rendez-vous.');
+                }
+            },
+            events: async function(fetchInfo, successCallback, failureCallback) {
+                // Chargement des événements depuis MongoDB
+                try {
+                    const response = await axios.get('http://localhost:8000/appointments'); // Endpoint API
+                    const events = response.data.map(appt => ({
+                        id: appt._id,
+                        title: `${appt.customerName} - ${appt.service}`,
+                        start: `${appt.date}T${appt.time}`
+                    }));
+                    successCallback(events);
+                } catch (error) {
+                    console.error('Erreur lors du chargement des rendez-vous', error);
+                    failureCallback(error);
+                }
+            }
+        });
+
+        // Afficher le calendrier
+        calendar.render();
+    });
+  </script>
+</body>
+</html>

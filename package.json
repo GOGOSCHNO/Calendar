@@ -1,0 +1,16 @@
+{
+  "name": "frontend_calendar",
+  "version": "1.0.0",
+  "description": "Un calendrier interactif pour la gestion des rendez-vous.",
+  "main": "index.js",
+  "scripts": {
+    "start": "live-server"
+  },
+  "author": "Votre Nom",
+  "license": "MIT",
+  "dependencies": {
+    "@fullcalendar/core": "^6.0.0",
+    "@fullcalendar/daygrid": "^6.0.0",
+    "axios": "^1.0.0"
+  }
+}
