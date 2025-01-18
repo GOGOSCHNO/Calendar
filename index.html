@@ -42,7 +42,7 @@
                     time: info.event.start.toISOString().slice(11, 16)
                 };
                 try {
-                    await axios.put(`http://localhost:8000/appointments/${updatedEvent.id}`, updatedEvent);
+                    await axios.put(`https://assistant-backend-60f69728218c.herokuapp.com/appointments/${updatedEvent.id}`, updatedEvent);
                     alert('Rendez-vous mis à jour avec succès.');
                 } catch (error) {
                     console.error('Erreur lors de la mise à jour', error);
@@ -50,9 +50,9 @@
                 }
             },
             events: async function(fetchInfo, successCallback, failureCallback) {
-                // Chargement des événements depuis MongoDB
+                // Chargement des événements depuis MongoDB via Heroku
                 try {
-                    const response = await axios.get('http://localhost:8000/appointments'); // Endpoint API
+                    const response = await axios.get('https://assistant-backend-60f69728218c.herokuapp.com/appointments'); // Endpoint API
                     const events = response.data.map(appt => ({
                         id: appt._id,
                         title: `${appt.customerName} - ${appt.service}`,
